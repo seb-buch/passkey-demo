@@ -6,3 +6,4 @@ infra/certs/
 .env
 .idea/
 .claude/
+.gemini_memory

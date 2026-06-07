@@ -27,7 +27,7 @@ class SqliteConnectionManager:
 
 
 class SqliteUserStorage(ProvidesUserWithPasswordHash, SavesNewUsers):
-    _USER_COLUMNS = "id, username, display_name, user_handle"
+    _USER_COLUMNS = "id, username, display_name, user_handle, totp_secret, mfa_enabled"
 
     def __init__(
         self,
@@ -48,7 +48,9 @@ class SqliteUserStorage(ProvidesUserWithPasswordHash, SavesNewUsers):
                     username      TEXT NOT NULL UNIQUE,
                     display_name  TEXT NOT NULL,
                     password_hash TEXT NOT NULL,
-                    user_handle   BLOB NOT NULL UNIQUE
+                    user_handle   BLOB NOT NULL UNIQUE,
+                    totp_secret   TEXT,
+                    mfa_enabled   INTEGER NOT NULL DEFAULT 0
                 )
                 """,
             )
@@ -78,7 +80,23 @@ class SqliteUserStorage(ProvidesUserWithPasswordHash, SavesNewUsers):
             username=row["username"],
             display_name=row["display_name"],
             user_handle=row["user_handle"],
+            totp_secret=row["totp_secret"],
+            mfa_enabled=bool(row["mfa_enabled"]),
         )
+
+    def set_totp_secret(self, user_id: int, totp_secret: str | None) -> None:
+        with self._connection_manager.connection as connection:
+            connection.execute(
+                "UPDATE users SET totp_secret = ? WHERE id = ?",
+                (totp_secret, user_id),
+            )
+
+    def set_mfa_enabled(self, user_id: int, *, enabled: bool) -> None:
+        with self._connection_manager.connection as connection:
+            connection.execute(
+                "UPDATE users SET mfa_enabled = ? WHERE id = ?",
+                (1 if enabled else 0, user_id),
+            )
 
     @override
     def get_user_by_id(self, user_id: int) -> User | None:

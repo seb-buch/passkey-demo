@@ -12,7 +12,7 @@ from krabsvault.users import (
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
     db_path: Path = Path("vault.db")
-    secret_key: str = token_hex(32)  # noqa: S105
+    secret_key: str = token_hex(32)
     users: list[NewUser] = []
     rp_id: str = "localhost"
     rp_name: str = "KrabsVault"

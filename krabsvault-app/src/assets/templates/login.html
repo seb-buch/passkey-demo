@@ -15,7 +15,7 @@
     <form id="login-form" action="/login" method="post">
       <div class="form-group">
         <label for="username">Username</label>
-        <input type="text" id="username" name="username" required autocomplete="username" autofocus>
+        <input type="text" id="username" name="username" required autocomplete="username webauthn" autofocus>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
@@ -38,6 +38,8 @@
 
 {% block scripts %}
   <script src="{{ url_for('static', path='api.js') }}"></script>
-  <script src="{{ url_for('static', path='authenticate.js') }}"></script>
-  <script src="{{ url_for('static', path='login.js') }}"></script>
+  {% if security_level == "passkey" %}
+    <script src="{{ url_for('static', path='authenticate.js') }}"></script>
+    <script src="{{ url_for('static', path='login.js') }}"></script>
+  {% endif %}
 {% endblock %}

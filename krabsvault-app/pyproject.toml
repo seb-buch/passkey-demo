@@ -22,6 +22,8 @@ dependencies = [
     "itsdangerous>=2.2.0",
     # Passkeys
     "webauthn>=2.7.1",
+    # MFA
+    "pyotp>=2.9.0",
 ]
 
 [project.scripts]

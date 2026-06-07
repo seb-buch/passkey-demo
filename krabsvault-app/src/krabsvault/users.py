@@ -8,6 +8,8 @@ class User:
     username: str
     display_name: str
     user_handle: bytes  # random opaque identifier used during WebAuthn ceremonies
+    totp_secret: str | None = None
+    mfa_enabled: bool = False
 
 
 @dataclass
