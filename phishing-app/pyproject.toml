@@ -1,0 +1,28 @@
+[project]
+name = "phishing"
+version = "0.1.0"
+description = "Phishing demo + infrastructure for KrabsVault Devoxx presentation"
+requires-python = ">=3.14"
+
+dependencies = [
+    "fastapi>=0.135.3",
+    "uvicorn>=0.44.0",
+    "jinja2>=3.1.6",
+    "python-multipart>=0.0.26",
+]
+
+[project.scripts]
+phishing = "phishing.app:main"
+
+[build-system]
+requires = ["uv_build>=0.11.6,<0.12"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff",
+]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["D"]

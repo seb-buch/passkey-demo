@@ -1,0 +1,52 @@
+[project]
+name = "krabsvault"
+version = "0.1.0"
+description = "KrabsVault Application"
+readme = "README.md"
+authors = [
+    { name = "Sébastien Buchoux", email = "sebastien.buchoux@gmail.com" }
+]
+requires-python = ">=3.14"
+
+dependencies = [
+    # Application
+    "fastapi>=0.135.3",
+    "pydantic>=2.13.0",
+    "pydantic-settings>=2.13.1",
+    "uvicorn>=0.44.0",
+    "starlette>=1.0.0",
+    "jinja2>=3.1.6",
+    "python-multipart>=0.0.26",
+    # Password
+    "argon2-cffi>=25.1.0",
+    "itsdangerous>=2.2.0",
+    # Passkeys
+    "webauthn>=2.7.1",
+]
+
+[project.scripts]
+krabsvault = "krabsvault.app:main"
+
+[build-system]
+requires = ["uv_build>=0.11.6,<0.12"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff",
+    "ty",
+    "pyright",
+    "pyrefly"
+]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["D"]
+
+
+[tool.pyright]
+pythonVersion = "3.14"
+typeCheckingMode = "strict"
+venvPath = "."
+venv = ".venv"
+exclude = [".venv"]

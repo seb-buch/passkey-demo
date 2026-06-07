@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}The Vault — KrabsVault{% endblock %}
+
+
+{% block header %}
+<div class="header-right">
+  <div class="header-actions">
+    <span class="greeting">Welcome, {{ user.display_name }}!</span>
+    <button class="btn btn-passkey" id="register-passkey-btn" style="display: none;">🔑 &nbsp;Register
+      a Passkey
+    </button>
+    <form action="/logout" method="post">
+      <button type="submit" class="btn btn-danger">Logout</button>
+    </form>
+  </div>
+  <p id="passkey-status" class="passkey-status" style="display: none;"></p>
+</div>
+{% endblock %}
+
+{% block content %}
+<p>RECIPE HERE</p>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='api.js') }}"></script>
+<script src="{{ url_for('static', path='register.js') }}"></script>
+<script src="{{ url_for('static', path='vault.js') }}"></script>
+{% endblock %}
