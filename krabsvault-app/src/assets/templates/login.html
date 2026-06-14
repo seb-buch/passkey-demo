@@ -2,37 +2,63 @@
 
 {% block title %}Login — KrabsVault{% endblock %}
 
-{% block header %}<p>Welcome to Krabsvault !</p>{% endblock %}
 
 {% block content %}
-  <div class="card">
-    <p class="subtitle">Enter your credentials to access the secret recipe</p>
+  <div class="login-container">
 
-    {% if error %}
-      <div class="error-message">{{ error }}</div>
-    {% endif %}
-
-    <form id="login-form" action="/login" method="post">
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" required autocomplete="username webauthn" autofocus>
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required
-               autocomplete="current-password">
-      </div>
-      <button type="submit" class="btn btn-primary" id="submit-btn">Enter the Vault</button>
-    </form>
-
-    <div id="passkey-login-separator"
-         style="display: none; text-align: center; margin: 1.5rem 0 0.5rem; color: #999; font-size: 0.95rem;">
-      or
+    <div class="warning-banner">
+      <span class="material-symbols-outlined">warning</span>
+      <span>No Plankton allowed!</span>
     </div>
 
-    <button class="btn btn-passkey" id="passkey-login-btn" style="display: none;">
-      🔑 Sign in with a Passkey
-    </button>
+    <div class="vault-panel">
+
+      <div class="rivet rivet-tl"></div>
+      <div class="rivet rivet-tr"></div>
+      <div class="rivet rivet-bl"></div>
+      <div class="rivet rivet-br"></div>
+
+      <figure class="vault-title-area">
+        <img src="{{ url_for('static', path='krabsvault-logo.png') }}" alt="Krusty Vault Logo">
+        <figcaption class="vault-title">
+          KrustyVault
+        </figcaption>
+      </figure>
+
+      {% if error %}
+        <div class="error-message">{{ error }}</div>
+      {% endif %}
+
+      <form id="login-form" action="/login" method="post">
+        <div class="form-group">
+          <label for="username">
+            <span class="material-symbols-outlined">badge</span>
+            Employee ID
+          </label>
+          <input type="text" id="username" name="username" required autocomplete="username webauthn"
+                 autofocus
+                 placeholder="Enter ID Sequence">
+        </div>
+        <div class="form-group">
+          <label for="password">
+            <span class="material-symbols-outlined">key</span>
+            Secret Passcode
+          </label>
+          <input type="password" id="password" name="password" required
+                 autocomplete="current-password" placeholder="••••••••">
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="submit-btn">
+            <span class="material-symbols-outlined">lock_open</span>
+            Authorize Access
+          </button>
+        </div>
+      </form>
+
+
+    </div>
+
+
   </div>
 {% endblock %}
 
