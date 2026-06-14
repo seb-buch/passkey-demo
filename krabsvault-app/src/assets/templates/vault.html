@@ -9,7 +9,7 @@
         <span class="material-symbols-outlined">security</span>
         KrabsVault
       </span>
-    <span class="vault-greeting">Ahoy, {{ user.display_name }}!</span>
+    <span class="vault-greeting">Ahoy, <span>{{ user.display_name }}</span>!</span>
 
     <div class="vault-nav-actions">
       {% if security_level == "mfa" %}
@@ -20,7 +20,7 @@
           </a>
         {% else %}
           <span class="secured-badge">
-            <span class="material-symbols-outlined">shield</span>
+            <span class="material-symbols-outlined">shield_lock</span>
             MFA Active
           </span>
         {% endif %}
@@ -41,15 +41,14 @@
       {% endif %}
 
       <form action="/logout" method="post">
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn-primary">
           <span class="material-symbols-outlined">lock</span>
           Log Out
         </button>
       </form>
     </div>
   </nav>
-  <p id="infobox" class="infobox error">
-    Blah blah
+  <p id="infobox" class="infobox" style="display: none;">
   </p>
 {% endblock %}
 

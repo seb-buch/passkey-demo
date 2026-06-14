@@ -165,7 +165,7 @@ button {
   0 6px 0 var(--secondary-dark),
   0 8px 10px rgba(0, 0, 0, 0.3);
   font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -393,7 +393,7 @@ header:has(> nav) {
 
 
 .vault-brand-name {
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 800;
   color: var(--secondary);
   text-transform: uppercase;
@@ -408,14 +408,18 @@ header:has(> nav) {
 }
 
 .vault-greeting {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.85);
+  color: white;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   justify-self: start;
   flex-grow: 1;
   padding: 0 1em;
+
+  & > span {
+    color: var(--secondary);
+  }
 }
 
 .vault-nav-actions {
@@ -459,7 +463,7 @@ header:has(> nav) {
 .vault-nav-actions .btn-primary {
   width: auto;
   padding: 8px 14px;
-  font-size: 12px;
+  font-size: 18px;
   box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.8),
   0 4px 0 var(--secondary-dark),
   0 6px 8px rgba(0, 0, 0, 0.3);
@@ -478,13 +482,11 @@ header:has(> nav) {
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  font-size: 18px;
   border-radius: 0.5rem;
-  font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   color: white;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
 }
 
 /* Passkey status feedback line */
