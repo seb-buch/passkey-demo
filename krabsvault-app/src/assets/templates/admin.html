@@ -2,92 +2,82 @@
 
 {% block title %}Demo Admin — KrabsVault{% endblock %}
 
-{% block header %}<p>Demo Control Center</p>{% endblock %}
+{% block header %}
+  <nav class="vault-nav">
+  <span class="vault-brand-name">
+        <span class="material-symbols-outlined">security</span>
+        KrabsVault
+      </span>
+    <span class="vault-greeting">
+      Demo Control Center
+    </span>
+  </nav>
+  <div id="status-toast" class="infobox" style="display: none;">
+  </div>
+{% endblock %}
 
 {% block content %}
-  <div class="card" style="max-width: 600px; margin: 0 auto;">
-    <p class="subtitle">Switch the application's active security mode in real-time without restarting the servers.</p>
+  <div class="vault-panel">
+    <div class="rivet rivet-tl"></div>
+    <div class="rivet rivet-tr"></div>
+    <div class="rivet rivet-bl"></div>
+    <div class="rivet rivet-br"></div>
 
-    <div id="status-toast" class="passkey-status" style="display: none; text-align: center; margin-bottom: 1rem;">
-      Security level updated successfully!
-    </div>
 
     <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-      
+
       <!-- Password mode card -->
-      <button class="btn btn-level" id="btn-password" onclick="setSecurityLevel('password')" 
-              style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); color: var(--text-primary); transition: all 0.3s ease;">
-        <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.1rem;">
+      <button class="security-level" id="btn-password" onclick="setSecurityLevel('password')">
+        <span class="security-level-title">
           🔑 Level 1: Password Only
-        </div>
-        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; font-weight: 400;">
-          Only standard password authentication is active. MFA is disabled, and Passkey buttons are hidden.
-        </div>
+        </span>
+        <span class="security-level-description">
+          Only standard password authentication is active. MFA is disabled, and Passkey buttons are
+          hidden.
+        </span>
       </button>
 
       <!-- MFA mode card -->
-      <button class="btn btn-level" id="btn-mfa" onclick="setSecurityLevel('mfa')"
-              style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); color: var(--text-primary); transition: all 0.3s ease;">
-        <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.1rem;">
+      <button class="security-level" id="btn-mfa" onclick="setSecurityLevel('mfa')">
+        <span class="security-level-title">
           🔐 Level 2: Password + MFA (OTP)
-        </div>
-        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; font-weight: 400;">
+        </span>
+        <span class="security-level-description">
           Bob must enter his password followed by a 6-digit MFA code. Passkey buttons remain hidden.
-        </div>
+        </span>
       </button>
 
       <!-- Passkeys mode card -->
-      <button class="btn btn-level" id="btn-passkey" onclick="setSecurityLevel('passkey')"
-              style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; padding: 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); color: var(--text-primary); transition: all 0.3s ease;">
-        <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.1rem; color: var(--passkey-blue);">
+      <button class="security-level" id="btn-passkey" onclick="setSecurityLevel('passkey')">
+        <span class="security-level-title">
           🛡️ Level 3: Passkeys Enabled
-        </div>
-        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; font-weight: 400;">
-          Passkeys are fully enabled. Bob can register passkeys in the vault and log in passwordless.
-        </div>
+        </span>
+        <span class="security-level-description">
+          Passkeys are fully enabled. Bob can register passkeys in the vault and log in
+          passwordless.
+        </span>
       </button>
 
     </div>
-    
-    <div style="text-align: center; margin-top: 1rem; display: flex; justify-content: space-between; gap: 1rem;">
-      <a href="/login" class="btn" style="background: rgba(255,255,255,0.05); color: var(--text-primary); width: auto; font-size: 0.9rem;">
-        Go to Login
-      </a>
-      <a href="/" class="btn" style="background: rgba(255,255,255,0.05); color: var(--text-primary); width: auto; font-size: 0.9rem;">
-        Go to Vault
-      </a>
-    </div>
+
   </div>
 {% endblock %}
 
 {% block scripts %}
   <script>
     let currentLevel = "{{ security_level }}";
+    const toast = document.getElementById('status-toast');
 
     function updateActiveButtonUI() {
       // Reset all buttons
-      document.querySelectorAll('.btn-level').forEach(btn => {
-        btn.style.borderColor = 'rgba(255,255,255,0.05)';
-        btn.style.background = 'rgba(255,255,255,0.02)';
-        btn.style.boxShadow = 'none';
+      document.querySelectorAll('.security-level').forEach(btn => {
+        btn.classList.remove('active');
       });
 
       // Highlight active button
       const activeBtn = document.getElementById(`btn-${currentLevel}`);
       if (activeBtn) {
-        if (currentLevel === 'passkey') {
-          activeBtn.style.borderColor = 'var(--passkey-blue)';
-          activeBtn.style.background = 'rgba(0, 217, 255, 0.04)';
-          activeBtn.style.boxShadow = '0 0 15px rgba(0, 217, 255, 0.1)';
-        } else if (currentLevel === 'mfa') {
-          activeBtn.style.borderColor = 'var(--gold)';
-          activeBtn.style.background = 'rgba(229, 193, 88, 0.04)';
-          activeBtn.style.boxShadow = '0 0 15px rgba(229, 193, 88, 0.1)';
-        } else {
-          activeBtn.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-          activeBtn.style.background = 'rgba(255, 255, 255, 0.06)';
-          activeBtn.style.boxShadow = '0 0 15px rgba(255, 255, 255, 0.05)';
-        }
+        activeBtn.classList.add('active');
       }
     }
 
@@ -98,23 +88,29 @@
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ level: level }),
+          body: JSON.stringify({level: level}),
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           currentLevel = data.security_level;
           updateActiveButtonUI();
-          
-          const toast = document.getElementById('status-toast');
+
           toast.textContent = `Security level switched to: ${level.toUpperCase()}`;
           toast.style.display = 'block';
-          
+
           setTimeout(() => {
             toast.style.display = 'none';
           }, 3000);
         } else {
-          alert('Failed to update security level');
+          toast.textContent = `Failed to update security level to: ${level.toUpperCase()}`;
+          toast.classList.add('error');
+          toast.style.display = 'block';
+
+          setTimeout(() => {
+            toast.style.display = 'none';
+            toast.classList.remove('error');
+          }, 3000);
         }
       } catch (err) {
         console.error('Error updating security level:', err);
