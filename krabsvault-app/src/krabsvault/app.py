@@ -32,6 +32,8 @@ from krabsvault.storage import (
 )
 from krabsvault.webauthn_auth import RelyingParty, WebauthnAuthenticator
 
+LOGIN_URL = "/login"
+
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
 
@@ -46,6 +48,7 @@ class AppState:
     password_authenticator: PasswordAuthenticator
     webauthn_authenticator: WebauthnAuthenticator
     user_storage: SqliteUserStorage
+    credential_storage: SqliteCredentialStorage
     security_level: str = "password"
     sse_clients: set  # set[asyncio.Queue[str]]
 
@@ -82,6 +85,7 @@ async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
     credential_storage = SqliteCredentialStorage(
         connection_manager=connection_manager,
     )
+    app_state.credential_storage = credential_storage
 
     app_state.webauthn_authenticator = WebauthnAuthenticator(
         relying_party=RelyingParty(
@@ -123,11 +127,17 @@ templates = Jinja2Templates(directory=ASSETS_DIR / "templates")
 async def index(request: Request) -> Response:
     user = app_state.session_manager.get_user(request)
     if not user:
-        return RedirectResponse("/login")
+        return RedirectResponse(LOGIN_URL)
     return templates.TemplateResponse(
         request,
         "vault.html",
-        {"user": user, "security_level": app_state.security_level},
+        {
+            "user": user,
+            "security_level": app_state.security_level,
+            "passkey_on_device": request.session.get(
+                "authenticated_with_passkey", False
+            ),
+        },
     )
 
 
@@ -190,7 +200,7 @@ async def sse_events(request: Request) -> StreamingResponse:
 
 
 # region Password-related routes
-@app.get("/login", response_model=None)
+@app.get(LOGIN_URL, response_model=None)
 async def login_page(request: Request, error: str | None = None) -> Response:
     user = app_state.session_manager.get_user(request)
     if user:
@@ -202,7 +212,7 @@ async def login_page(request: Request, error: str | None = None) -> Response:
     )
 
 
-@app.post("/login")
+@app.post(LOGIN_URL)
 async def login(
     request: Request,
     username: Annotated[str, Form()],
@@ -216,7 +226,7 @@ async def login(
     if isinstance(user, AuthenticationFailure):
         return RedirectResponse("/login?error=Invalid+credentials", status_code=303)
 
-    if app_state.security_level == "mfa" and user.mfa_enabled:
+    if app_state.security_level in ("mfa", "passkey") and user.mfa_enabled:
         request.session["pending_mfa_user_id"] = user.id
         request.session["pending_mfa_username"] = user.username
         return RedirectResponse("/login/mfa", status_code=303)
@@ -376,6 +386,7 @@ async def webauthn_register_verify(request: Request) -> JSONResponse:
         user_id=user.id,
     )
     app_state.session_manager.clear_challenge(request)
+    request.session["authenticated_with_passkey"] = True
     return JSONResponse({"status": "ok"})
 
 
@@ -410,8 +421,8 @@ async def webauthn_login_verify(request: Request) -> JSONResponse:
         expected_challenge=challenge,
     )
     app_state.session_manager.clear_challenge(request)
-
     app_state.session_manager.set_user(request, user)
+    request.session["authenticated_with_passkey"] = True
     return JSONResponse({"status": "ok"})
 
 

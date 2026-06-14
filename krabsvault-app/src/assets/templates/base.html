@@ -22,5 +22,10 @@
 </footer>
 
 {% block scripts %}{% endblock %}
+{% block reload_trigger %}
+  <script>
+    new EventSource('/api/events').onmessage = () => location.reload();
+  </script>
+{% endblock %}
 </body>
 </html>

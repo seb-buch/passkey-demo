@@ -28,26 +28,28 @@ async function registerPasskey() {
 // region UI handler
 /** @returns {Promise<void>} */
 async function handlePasskeyRegistration() {
-  const statusEl = document.getElementById("passkey-status");
+  const infobox = document.getElementById("infobox");
   const btn = document.getElementById("register-passkey-btn");
 
   btn.disabled = true;
   btn.textContent = "Registering...";
-  statusEl.style.display = "none";
+
+  const showInfobox = (message, isError) => {
+    infobox.textContent = message;
+    infobox.classList.toggle("error", isError);
+    infobox.style.display = "block";
+    setTimeout(() => { infobox.style.display = "none"; }, 5000);
+  };
 
   try {
     await registerPasskey();
-    statusEl.textContent = "Passkey registered successfully!";
-    statusEl.style.color = "#4CAF50";
-    btn.textContent = "Passkey Registered";
+    showInfobox("Passkey registered! Reloading...", false);
+    setTimeout(() => location.reload(), 1500);
   } catch (e) {
-    statusEl.textContent = "Registration failed: " + e.message;
-    statusEl.style.color = "#C41E3A";
+    showInfobox("Registration failed: " + e.message, true);
     btn.disabled = false;
-    btn.textContent = "Register a Passkey";
+    btn.textContent = "Register Passkey";
   }
-
-  statusEl.style.display = "block";
 }
 
 document.getElementById("register-passkey-btn").addEventListener("click",
