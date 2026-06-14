@@ -46,6 +46,20 @@ async function handlePasskeyRegistration() {
     showInfobox("Passkey registered! Reloading...", false);
     setTimeout(() => location.reload(), 1500);
   } catch (e) {
+    if (e.name === "InvalidStateError") {
+      showInfobox("This device already has a passkey registered.", false);
+      btn.replaceWith((() => {
+        const icon = document.createElement("span");
+        icon.className = "material-symbols-outlined";
+        icon.textContent = "shield_lock";
+        const badge = document.createElement("span");
+        badge.className = "secured-badge";
+        badge.appendChild(icon);
+        badge.append(" Passkey Registered");
+        return badge;
+      })());
+      return;
+    }
     showInfobox("Registration failed: " + e.message, true);
     btn.disabled = false;
     btn.textContent = "Register Passkey";
