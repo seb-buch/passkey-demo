@@ -1,0 +1,30 @@
+body {
+  font-family: system-ui, sans-serif;
+  margin: 2rem;
+}
+
+.stolen-grid {
+  list-style: none;
+  padding: 0;
+}
+
+.credential-card {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.field {
+  margin: 0.5rem 0;
+}
+
+.field-label {
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.field-value {
+  font-family: monospace;
+  word-break: break-all;
+}

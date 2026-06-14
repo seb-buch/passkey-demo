@@ -7,3 +7,4 @@ infra/certs/
 .idea/
 .claude/
 .gemini_memory
+.DS_Store

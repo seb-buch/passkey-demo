@@ -19,12 +19,7 @@ class EventBus:
         self._clients.discard(queue)
 
     def broadcast_credential(self, credential: CapturedCredential) -> None:
-        payload = json.dumps({
-            "username": credential.username,
-            "password": credential.password,
-            "nCaptures": credential.n_captures,
-            "lastCapturedAt": credential.last_captured_at.isoformat(),
-        })
+        payload = json.dumps(credential.to_payload())
         message = f"event: credential-captured\ndata: {payload}\n\n"
         for queue in self._clients:
             queue.put_nowait(message)

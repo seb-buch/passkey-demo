@@ -8,6 +8,17 @@ class CapturedCredential:
     password: str
     n_captures: int = 1
     last_captured_at: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
+    session_cookie: str | None = None
+
+    def to_payload(self) -> dict[str, str | int | None]:
+        """Serialize to the shape consumed by the control panel UI."""
+        return {
+            "username": self.username,
+            "password": self.password,
+            "nCaptures": self.n_captures,
+            "lastCapturedAt": self.last_captured_at.isoformat(),
+            "sessionCookie": self.session_cookie,
+        }
 
 
 captured_credentials: list[CapturedCredential] = []
@@ -23,3 +34,13 @@ def capture_credential(username: str, password: str) -> CapturedCredential:
     credential = CapturedCredential(username=username, password=password)
     captured_credentials.append(credential)
     return credential
+
+
+def capture_session(session_cookie: str) -> CapturedCredential | None:
+    if not captured_credentials:
+        return None
+    # Associate with the most recently captured credential
+    credential = captured_credentials[-1]
+    credential.session_cookie = session_cookie
+    return credential
+
