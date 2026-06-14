@@ -88,4 +88,7 @@
     <script src="{{ url_for('static', path='register.js') }}"></script>
     <script src="{{ url_for('static', path='vault.js') }}"></script>
   {% endif %}
+  <script>
+    new EventSource('/api/events').onmessage = () => location.reload();
+  </script>
 {% endblock %}

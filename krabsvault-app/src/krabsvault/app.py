@@ -1,3 +1,4 @@
+import asyncio
 import re
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -10,7 +11,12 @@ from fastapi import FastAPI, Form, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import JSONResponse, RedirectResponse, Response
+from starlette.responses import (
+    JSONResponse,
+    RedirectResponse,
+    Response,
+    StreamingResponse,
+)
 from webauthn.helpers import options_to_json_dict
 
 from krabsvault.password_auth import (
@@ -41,9 +47,11 @@ class AppState:
     webauthn_authenticator: WebauthnAuthenticator
     user_storage: SqliteUserStorage
     security_level: str = "password"
+    sse_clients: set  # set[asyncio.Queue[str]]
 
 
 app_state = AppState()
+app_state.sse_clients = set()
 
 
 # --- App setup ---
@@ -145,8 +153,36 @@ async def set_security_level(request: Request) -> JSONResponse:
     if level not in ("password", "mfa", "passkey"):
         return JSONResponse({"error": "Invalid security level"}, status_code=400)
     app_state.security_level = level
+    app_state.session_manager.clear(request)
+    for client in app_state.sse_clients:
+        await client.put("security-level-changed")
     return JSONResponse(
         {"status": "ok", "security_level": app_state.security_level},
+    )
+
+
+@app.get("/api/events")
+async def sse_events(request: Request) -> StreamingResponse:
+    queue: asyncio.Queue[str] = asyncio.Queue()
+    app_state.sse_clients.add(queue)
+
+    async def stream():
+        try:
+            while True:
+                if await request.is_disconnected():
+                    break
+                try:
+                    data = await asyncio.wait_for(queue.get(), timeout=15.0)
+                    yield f"data: {data}\n\n"
+                except asyncio.TimeoutError:
+                    yield ": keepalive\n\n"
+        finally:
+            app_state.sse_clients.discard(queue)
+
+    return StreamingResponse(
+        stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
 
 
