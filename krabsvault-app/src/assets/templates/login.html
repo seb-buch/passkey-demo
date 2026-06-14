@@ -64,8 +64,8 @@
 
 {% block scripts %}
   <script src="{{ url_for('static', path='api.js') }}"></script>
+  <script src="{{ url_for('static', path='login.js') }}"></script>
   {% if security_level == "passkey" %}
     <script src="{{ url_for('static', path='authenticate.js') }}"></script>
-    <script src="{{ url_for('static', path='login.js') }}"></script>
   {% endif %}
 {% endblock %}
