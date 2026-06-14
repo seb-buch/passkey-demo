@@ -73,13 +73,25 @@
            alt="Krabby Patty Secret Formula">
 
     </figure>
-    <button class="btn btn-primary">
+    <button class="btn-primary" id="view-formula-btn">
       <span class="material-symbols-outlined">visibility</span>
       View formula
     </button>
 
-
   </div>
+
+  <dialog id="formula-dialog">
+    <div class="dialog-panel">
+      <img src="{{ url_for('static', path='mr-krabs.png') }}" alt="Mr. Krabs">
+      <h2>AYE AYE AYE!</h2>
+      <p>You really thought I'd put me secret formula in a DEMO?! Arr arr arr!<br>
+        This be just a demonstration, boyo. The real formula stays locked in me brain!</p>
+      <button class="btn-primary" onclick="document.getElementById('formula-dialog').close()">
+        <span class="material-symbols-outlined">lock</span>
+        Understood, Mr. Krabs
+      </button>
+    </div>
+  </dialog>
 {% endblock %}
 
 {% block scripts %}
@@ -88,4 +100,10 @@
     <script src="{{ url_for('static', path='register.js') }}"></script>
     <script src="{{ url_for('static', path='vault.js') }}"></script>
   {% endif %}
+  <script>
+    document.getElementById('view-formula-btn').addEventListener('click', () => {
+      document.getElementById('formula-dialog').showModal();
+    });
+    new EventSource('/api/events').onmessage = () => location.reload();
+  </script>
 {% endblock %}
