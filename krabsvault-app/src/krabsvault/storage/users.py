@@ -62,14 +62,17 @@ class SqliteUserStorage(ProvidesUserWithPasswordHash, SavesNewUsers):
                 connection.execute(
                     """
                     INSERT OR IGNORE INTO users
-                    (username, display_name, password_hash, user_handle)
-                    VALUES (?, ?, ?, ?)
+                    (username, display_name, password_hash, user_handle,
+                     totp_secret, mfa_enabled)
+                    VALUES (?, ?, ?, ?, ?, ?)
                     """,
                     (
                         user.username,
                         user.display_name,
                         self._hasher.hash(user.password),
                         os.urandom(64),
+                        user.totp_secret,
+                        int(user.mfa_enabled),
                     ),
                 )
 

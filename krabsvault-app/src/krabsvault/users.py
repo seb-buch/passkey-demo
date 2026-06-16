@@ -17,6 +17,8 @@ class NewUser:
     username: str
     display_name: str
     password: str  # plaintext, hashed at storage time
+    totp_secret: str | None = None  # base32; pre-enrolls MFA when seeded
+    mfa_enabled: bool = False
 
 
 # region User-related protocols
