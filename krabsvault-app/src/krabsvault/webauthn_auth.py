@@ -111,7 +111,7 @@ class WebauthnAuthenticator:
             expected_challenge=expected_challenge,
             expected_rp_id=self._rp.id,
             expected_origin=self._rp.origin,
-            require_user_verification=True,
+            require_user_verification=False,
         )
         credential = WebauthnCredential(
             id=verification.credential_id,
@@ -154,7 +154,7 @@ class WebauthnAuthenticator:
             expected_origin=self._rp.origin,
             credential_public_key=stored.public_key,
             credential_current_sign_count=stored.signature_count,
-            require_user_verification=True,
+            require_user_verification=False,
         )
 
         self._credential_storage.update_signature_count(
