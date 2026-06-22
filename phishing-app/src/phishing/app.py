@@ -75,6 +75,12 @@ async def hijack(cookie: str) -> RedirectResponse:
     return response
 
 
+@app.post("/purge")
+async def purge_credentials() -> Response:
+    captured_credentials.clear()
+    return Response(status_code=204)
+
+
 @app.get("/stolen/api/events")
 async def sse_events() -> StreamingResponse:
     queue = event_bus.add_client()
