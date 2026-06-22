@@ -16,10 +16,11 @@ from phishing.credentials import (
 from phishing.event_bus import event_bus
 
 ASSETS_DIR: Path = Path(__file__).parents[1] / "assets"
+TEMPLATES_DIR: Path = Path(__file__).parent / "templates"
 
 app = FastAPI()
 app.mount("/stolen/static", StaticFiles(directory=ASSETS_DIR / "static"), name="static")
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 
 @app.get("/")

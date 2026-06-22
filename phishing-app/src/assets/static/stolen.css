@@ -359,8 +359,10 @@ body {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
   gap: 1.25rem;
 }
 
@@ -504,23 +506,25 @@ body {
 .mfa-field[hidden] {
   display: none;
 }
+
 .mfa-field {
   padding: 0.7rem 0.75rem 0.8rem;
   border: 1px solid rgba(255, 176, 0, 0.45);
   border-radius: 10px;
-  background:
-    repeating-linear-gradient(
+  background: repeating-linear-gradient(
       45deg,
       rgba(255, 176, 0, 0.05) 0 10px,
       transparent 10px 20px
-    ),
-    rgba(255, 176, 0, 0.06);
+  ),
+  rgba(255, 176, 0, 0.06);
   box-shadow: 0 0 18px rgba(255, 176, 0, 0.2);
   animation: card-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
+
 .mfa-field .field-label {
   color: var(--amber);
 }
+
 .field-value.mfa-code {
   font-family: var(--mono);
   font-size: 1.9rem;
